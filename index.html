@@ -3,129 +3,144 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Тест на отношения ❤️</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Выгодное предложение</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;background:#08080c;color:white;
-  font-family:Arial,sans-serif;min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:22px;
-}
-.card{width:100%;max-width:440px}
-.heart{font-size:65px;color:#ff2448}
-h1{color:#ff2448;font-size:30px}
-p{color:#ccc;line-height:1.5}
-button{
-  width:100%;padding:19px 10px;margin-top:18px;
-  border:0;border-radius:9px;background:#e11d3f;
-  color:white;font-size:19px;font-weight:bold;
-}
-#screen{display:none}
-#warning{color:#ff2448;font-size:32px;font-weight:900}
-#status{color:#ff6b6b;font-size:17px}
-body.alarm{animation:flash .22s infinite}
-body.alarm #screen{animation:shake .12s infinite}
-@keyframes flash{
-  0%,100%{background:#09090d}
-  50%{background:#65000d}
-}
-@keyframes shake{
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-3px)}
-  75%{transform:translateX(3px)}
-}
-.small{font-size:12px;color:#999}
+body{margin:0;background:#f3f4f6;color:#171717;font-family:Arial,sans-serif}
+.page{max-width:430px;margin:auto;padding:22px}
+.product{background:white;border-radius:18px;overflow:hidden;box-shadow:0 5px 25px #0001}
+.pic{height:240px;background:linear-gradient(135deg,#dedee7,#777b91);display:grid;place-items:center;font-size:95px}
+.info{padding:22px}
+.tag{color:#6d28d9;font-weight:bold;font-size:13px}
+h1{font-size:26px;margin:12px 0}
+.price{font-size:28px;font-weight:bold}
+button{width:100%;padding:17px;border:0;border-radius:10px;background:#6d28d9;color:white;font-size:17px;font-weight:bold;margin-top:18px}
+.note{color:#777;font-size:12px;text-align:center;margin-top:14px}
+#hack{display:none;background:#020503;color:#30ff75;min-height:100vh;padding:22px;font-family:monospace}
+.terminal{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}
+.blink{animation:blink .7s infinite}
+@keyframes blink{50%{opacity:.2}}
+#result{color:#ff355e;font-size:26px;font-weight:bold;margin-top:25px}
+#stop{background:#292929;color:white}
 </style>
 </head>
 <body>
-<div class="card" id="start">
-  <div class="heart">♥</div>
-  <h1>ТЕСТ НА ОТНОШЕНИЯ</h1>
-  <p>Проверьте, насколько крепки ваши отношения ❤️</p>
-  <p>Готовы узнать результат?</p>
-  <button id="launch">ЗАПУСТИТЬ ТЕСТ</button>
-  <p class="small">Нажимая кнопку, вы запускаете развлекательный тест.</p>
-</div>
+<main class="page" id="shop">
+ <div class="product">
+  <div class="pic">🎧</div>
+  <div class="info">
+   <div class="tag">🔥 СПЕЦИАЛЬНОЕ ПРЕДЛОЖЕНИЕ</div>
+   <h1>Беспроводные наушники Pro</h1>
+   <p>Стильный дизайн. Чистый звук. Удобная посадка.</p>
+   <div class="price">499 грн</div>
+   <button id="view">ПОСМОТРЕТЬ ТОВАР →</button>
+   <div class="note">Демонстрационная страница</div>
+  </div>
+ </div>
+</main>
 
-<div class="card" id="screen">
-  <div style="font-size:55px">⚠️</div>
-  <h1 id="warning">ВАШЕ УСТРОЙСТВО<br>ЗАХВАЧЕНО</h1>
-  <p id="status">ОШИБКА СИСТЕМЫ</p>
-  <p id="counter"></p>
-  <button id="stop">ОСТАНОВИТЬ ЭФФЕКТЫ</button>
-  <p class="small">Пранк-симуляция. Устройство не взломано.</p>
-</div>
+<section id="hack">
+ <div style="color:#ff355e">● SYSTEM CONSOLE — DEMO</div>
+ <p>--------------------------------</p>
+ <div class="terminal" id="logs"></div>
+ <div class="blink">█</div>
+ <div id="result"></div>
+ <button id="stop">ОСТАНОВИТЬ ЭФФЕКТЫ</button>
+ <p style="color:#888;font-size:11px">
+   Пранк-симуляция. Данные не собираются и не передаются.
+ </p>
+</section>
 
 <script>
-const launch = document.getElementById('launch');
-const stop = document.getElementById('stop');
-let audio;
+const view=document.getElementById('view');
+const shop=document.getElementById('shop');
+const hack=document.getElementById('hack');
+const logs=document.getElementById('logs');
+const result=document.getElementById('result');
+const stop=document.getElementById('stop');
 
-launch.addEventListener('click', async () => {
-  document.getElementById('start').style.display = 'none';
-  document.getElementById('screen').style.display = 'block';
-  document.body.classList.add('alarm');
+let timers=[];
+let active=false;
+let audio=null;
 
-  // Звук запускается после нажатия пользователем
-  try {
-    audio = new (window.AudioContext || window.webkitAudioContext)();
-    await audio.resume();
+function later(fn,ms){
+  const id=setTimeout(()=>{if(active)fn()},ms);
+  timers.push(id);
+}
 
-    // Короткий резкий электронный сигнал
-    [880, 440, 990].forEach((freq, i) => {
-      const osc = audio.createOscillator();
-      const gain = audio.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.0001, audio.currentTime + i * 0.17);
-      gain.gain.setValueAtTime(0.12, audio.currentTime + i * 0.17 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001, audio.currentTime + i * 0.17 + 0.14
-      );
-      osc.connect(gain);
-      gain.connect(audio.destination);
-      osc.start(audio.currentTime + i * 0.17);
-      osc.stop(audio.currentTime + i * 0.17 + 0.15);
-    });
-  } catch (e) {}
+view.addEventListener('click',()=>{
+ if(active)return;
+ active=true;
+ shop.style.display='none';
+ hack.style.display='block';
+ document.body.style.background='#020503';
 
-  // Вибрация поддерживается не всеми браузерами
-  if (navigator.vibrate) navigator.vibrate(5000);
+ const lines=[
+  '> Подключение к консоли...',
+  '> Инициализация системы...',
+  '> Проверка соединения... OK',
+  '> Поиск секретных файлов...',
+  '> Скачивание данных... 12%',
+  '> Скачивание данных... 48%',
+  '> Скачивание данных... 91%',
+  '> Анализ пользователя...',
+  '> Результат анализа готов.'
+ ];
+ lines.forEach((line,i)=>{
+   later(()=>{logs.textContent+=line+'\n'},i*650);
+ });
 
-  let seconds = 5;
-  const counter = document.getElementById('counter');
-  counter.textContent = 'ПРОВЕРКА: ' + seconds;
+ if(navigator.vibrate)navigator.vibrate(7000);
 
-  const timer = setInterval(() => {
-    seconds--;
-    counter.textContent = seconds > 0
-      ? 'ПРОВЕРКА: ' + seconds
-      : 'СИМУЛЯЦИЯ ЗАВЕРШЕНА';
+ // Короткий электронный сигнал
+ try{
+  audio=new (window.AudioContext||window.webkitAudioContext)();
+  audio.resume().then(()=>{
+   [740,440,880].forEach((f,i)=>{
+    const o=audio.createOscillator();
+    const g=audio.createGain();
+    o.frequency.value=f;
+    o.type='square';
+    g.gain.setValueAtTime(.08,audio.currentTime+i*.15);
+    g.gain.exponentialRampToValueAtTime(
+      .001,audio.currentTime+i*.15+.12);
+    o.connect(g);g.connect(audio.destination);
+    o.start(audio.currentTime+i*.15);
+    o.stop(audio.currentTime+i*.15+.13);
+   });
+  });
+ }catch(e){}
 
-    if (seconds <= 0) {
-      clearInterval(timer);
-      document.body.classList.remove('alarm');
-      document.getElementById('warning').innerHTML =
-        'ТЕБЯ РАЗВЕЛИ 😂';
-      document.getElementById('status').textContent =
-        'ТЕСТ НА ОТНОШЕНИЯ ПРОЙДЕН';
-      if (navigator.vibrate) navigator.vibrate(0);
-    }
-  }, 1000);
+ // Голос браузера, если доступен русский голос
+ later(()=>{
+  result.textContent='НУ ТЫ И ЛОХ, КОНЕЧНО 😂';
+  try{
+   if('speechSynthesis' in window){
+    speechSynthesis.cancel();
+    const msg=new SpeechSynthesisUtterance(
+      'Ну ты и лох, конечно!'
+    );
+    msg.lang='ru-RU';
+    msg.rate=1;
+    msg.pitch=.8;
+    speechSynthesis.speak(msg);
+   }
+  }catch(e){}
+ },6500);
+});
 
-  stop.onclick = () => {
-    clearInterval(timer);
-    document.body.classList.remove('alarm');
-    if (navigator.vibrate) navigator.vibrate(0);
-    if (audio) audio.close();
-    document.getElementById('warning').textContent = 'ЭФФЕКТ ОСТАНОВЛЕН';
-    document.getElementById('status').textContent = 'Всё в порядке ❤️';
-    counter.textContent = '';
-    stop.style.display = 'none';
-  };
+stop.addEventListener('click',()=>{
+ active=false;
+ timers.forEach(clearTimeout);
+ timers=[];
+ if(navigator.vibrate)navigator.vibrate(0);
+ if('speechSynthesis' in window)speechSynthesis.cancel();
+ if(audio){audio.close();audio=null}
+ result.textContent='ЭФФЕКТ ОСТАНОВЛЕН';
+ logs.textContent='';
+ stop.textContent='ОСТАНОВЛЕНО';
 });
 </script>
 </body>
-  </html>
+</html>
