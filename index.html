@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тест на отношения ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;background:#08080c;color:white;
+  font-family:Arial,sans-serif;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:22px;
+}
+.card{width:100%;max-width:440px}
+.heart{font-size:65px;color:#ff2448}
+h1{color:#ff2448;font-size:30px}
+p{color:#ccc;line-height:1.5}
+button{
+  width:100%;padding:19px 10px;margin-top:18px;
+  border:0;border-radius:9px;background:#e11d3f;
+  color:white;font-size:19px;font-weight:bold;
+}
+#screen{display:none}
+#warning{color:#ff2448;font-size:32px;font-weight:900}
+#status{color:#ff6b6b;font-size:17px}
+body.alarm{animation:flash .22s infinite}
+body.alarm #screen{animation:shake .12s infinite}
+@keyframes flash{
+  0%,100%{background:#09090d}
+  50%{background:#65000d}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-3px)}
+  75%{transform:translateX(3px)}
+}
+.small{font-size:12px;color:#999}
+</style>
+</head>
+<body>
+<div class="card" id="start">
+  <div class="heart">♥</div>
+  <h1>ТЕСТ НА ОТНОШЕНИЯ</h1>
+  <p>Проверьте, насколько крепки ваши отношения ❤️</p>
+  <p>Готовы узнать результат?</p>
+  <button id="launch">ЗАПУСТИТЬ ТЕСТ</button>
+  <p class="small">Нажимая кнопку, вы запускаете развлекательный тест.</p>
+</div>
+
+<div class="card" id="screen">
+  <div style="font-size:55px">⚠️</div>
+  <h1 id="warning">ВАШЕ УСТРОЙСТВО<br>ЗАХВАЧЕНО</h1>
+  <p id="status">ОШИБКА СИСТЕМЫ</p>
+  <p id="counter"></p>
+  <button id="stop">ОСТАНОВИТЬ ЭФФЕКТЫ</button>
+  <p class="small">Пранк-симуляция. Устройство не взломано.</p>
+</div>
+
+<script>
+const launch = document.getElementById('launch');
+const stop = document.getElementById('stop');
+let audio;
+
+launch.addEventListener('click', async () => {
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('screen').style.display = 'block';
+  document.body.classList.add('alarm');
+
+  // Звук запускается после нажатия пользователем
+  try {
+    audio = new (window.AudioContext || window.webkitAudioContext)();
+    await audio.resume();
+
+    // Короткий резкий электронный сигнал
+    [880, 440, 990].forEach((freq, i) => {
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, audio.currentTime + i * 0.17);
+      gain.gain.setValueAtTime(0.12, audio.currentTime + i * 0.17 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001, audio.currentTime + i * 0.17 + 0.14
+      );
+      osc.connect(gain);
+      gain.connect(audio.destination);
+      osc.start(audio.currentTime + i * 0.17);
+      osc.stop(audio.currentTime + i * 0.17 + 0.15);
+    });
+  } catch (e) {}
+
+  // Вибрация поддерживается не всеми браузерами
+  if (navigator.vibrate) navigator.vibrate(5000);
+
+  let seconds = 5;
+  const counter = document.getElementById('counter');
+  counter.textContent = 'ПРОВЕРКА: ' + seconds;
+
+  const timer = setInterval(() => {
+    seconds--;
+    counter.textContent = seconds > 0
+      ? 'ПРОВЕРКА: ' + seconds
+      : 'СИМУЛЯЦИЯ ЗАВЕРШЕНА';
+
+    if (seconds <= 0) {
+      clearInterval(timer);
+      document.body.classList.remove('alarm');
+      document.getElementById('warning').innerHTML =
+        'ТЕБЯ РАЗВЕЛИ 😂';
+      document.getElementById('status').textContent =
+        'ТЕСТ НА ОТНОШЕНИЯ ПРОЙДЕН';
+      if (navigator.vibrate) navigator.vibrate(0);
+    }
+  }, 1000);
+
+  stop.onclick = () => {
+    clearInterval(timer);
+    document.body.classList.remove('alarm');
+    if (navigator.vibrate) navigator.vibrate(0);
+    if (audio) audio.close();
+    document.getElementById('warning').textContent = 'ЭФФЕКТ ОСТАНОВЛЕН';
+    document.getElementById('status').textContent = 'Всё в порядке ❤️';
+    counter.textContent = '';
+    stop.style.display = 'none';
+  };
+});
+</script>
+</body>
+  </html>
