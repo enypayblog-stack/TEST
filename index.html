@@ -3,143 +3,215 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Выгодное предложение</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Product Viewer</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f3f4f6;color:#171717;font-family:Arial,sans-serif}
-.page{max-width:430px;margin:auto;padding:22px}
-.product{background:white;border-radius:18px;overflow:hidden;box-shadow:0 5px 25px #0001}
-.pic{height:240px;background:linear-gradient(135deg,#dedee7,#777b91);display:grid;place-items:center;font-size:95px}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f2f6;color:#171717}
+button{border:0;border-radius:10px;padding:17px;width:100%;
+font-size:17px;font-weight:bold;background:#6b28e8;color:white}
+#shop{max-width:430px;margin:auto;padding:20px}
+.product{background:white;border-radius:18px;overflow:hidden}
+.picture{height:280px;display:grid;place-items:center;
+font-size:100px;background:linear-gradient(140deg,#c8d3ed,#666b8e)}
 .info{padding:22px}
-.tag{color:#6d28d9;font-weight:bold;font-size:13px}
-h1{font-size:26px;margin:12px 0}
-.price{font-size:28px;font-weight:bold}
-button{width:100%;padding:17px;border:0;border-radius:10px;background:#6d28d9;color:white;font-size:17px;font-weight:bold;margin-top:18px}
-.note{color:#777;font-size:12px;text-align:center;margin-top:14px}
-#hack{display:none;background:#020503;color:#30ff75;min-height:100vh;padding:22px;font-family:monospace}
-.terminal{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}
-.blink{animation:blink .7s infinite}
-@keyframes blink{50%{opacity:.2}}
-#result{color:#ff355e;font-size:26px;font-weight:bold;margin-top:25px}
-#stop{background:#292929;color:white}
+.price{font-size:29px;font-weight:bold}
+#view{margin-top:18px}
+#console{display:none;background:#020605;color:#39ff8b;
+min-height:100vh;min-height:100dvh;padding:15px;
+overflow:hidden;font-family:monospace}
+.top{display:flex;justify-content:space-between;gap:8px;
+border-bottom:1px solid #185c37;padding:8px 0;font-size:12px}
+h2{font-size:21px;overflow-wrap:anywhere}
+.bar{height:9px;background:#163422;margin:12px 0}
+#fill{height:100%;width:0;background:#39ff8b;transition:width .3s}
+.panel{border:1px solid #1b633b;padding:10px;margin:10px 0;
+background:linear-gradient(110deg,#06150d,#020605)}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.metric{border:1px solid #185c37;padding:9px;font-size:12px}
+.big{font-size:21px;font-weight:bold;margin-top:7px}
+#logs{height:22vh;overflow:hidden;overflow-wrap:anywhere;
+font-size:12px;line-height:1.7}
+#network{width:100%;height:140px;display:block}
+svg circle{fill:#39ff8b}
+svg line{stroke:#176c3c;stroke-width:1}
+.progresslabel{display:flex;justify-content:space-between;font-size:12px}
+.red{color:#ff385b}
+#voiceResult{color:#ff385b;font-size:25px;font-weight:bold;
+text-align:center;margin:18px 0;overflow-wrap:anywhere}
+#disclaimer{font-size:11px;color:#9ab3a2;text-align:center}
+@keyframes flicker{0%,100%{opacity:1}50%{opacity:.72}}
+@keyframes pulse{50%{box-shadow:0 0 18px #39ff8b55}}
+.glow{animation:pulse 1s infinite}
 </style>
 </head>
 <body>
-<main class="page" id="shop">
+<section id="shop">
  <div class="product">
-  <div class="pic">🎧</div>
+  <div class="picture">🎧</div>
   <div class="info">
-   <div class="tag">🔥 СПЕЦИАЛЬНОЕ ПРЕДЛОЖЕНИЕ</div>
-   <h1>Беспроводные наушники Pro</h1>
-   <p>Стильный дизайн. Чистый звук. Удобная посадка.</p>
+   <p>🔥 СПЕЦИАЛЬНОЕ ПРЕДЛОЖЕНИЕ</p>
+   <h1>Наушники PRO X</h1>
+   <p>Беспроводной звук нового поколения</p>
    <div class="price">499 грн</div>
    <button id="view">ПОСМОТРЕТЬ ТОВАР →</button>
-   <div class="note">Демонстрационная страница</div>
   </div>
  </div>
-</main>
+</section>
 
-<section id="hack">
- <div style="color:#ff355e">● SYSTEM CONSOLE — DEMO</div>
- <p>--------------------------------</p>
- <div class="terminal" id="logs"></div>
- <div class="blink">█</div>
- <div id="result"></div>
- <button id="stop">ОСТАНОВИТЬ ЭФФЕКТЫ</button>
- <p style="color:#888;font-size:11px">
-   Пранк-симуляция. Данные не собираются и не передаются.
- </p>
+<section id="console">
+ <div class="top">
+  <span>NETWORK MONITOR</span>
+  <span class="red">● LIVE</span>
+ </div>
+ <h2>СЕТЕВОЙ ДИАГНОСТИЧЕСКИЙ ЦЕНТР</h2>
+
+ <div class="metrics">
+  <div class="metric">УЗЛЫ СЕТИ<div class="big" id="nodes">04</div></div>
+  <div class="metric">СТАТУС<div class="big" id="status">SCAN</div></div>
+  <div class="metric">ПАКЕТЫ<div class="big" id="packets">0000</div></div>
+  <div class="metric">СОЕДИНЕНИЕ<div class="big">ACTIVE</div></div>
+ </div>
+
+ <div class="panel glow">
+  <div class="progresslabel">
+   <span>ИНИЦИАЛИЗАЦИЯ КАНАЛА</span>
+   <span id="percent">0%</span>
+  </div>
+  <div class="bar"><div id="fill"></div></div>
+  <div id="phase">Подготовка соединения...</div>
+ </div>
+
+ <div class="panel">
+  <div>СХЕМА СЕТИ / ВИЗУАЛИЗАЦИЯ</div>
+  <svg id="network" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+   <g>
+    <line x1="160" y1="70" x2="55" y2="25"/>
+    <line x1="160" y1="70" x2="265" y2="25"/>
+    <line x1="160" y1="70" x2="55" y2="115"/>
+    <line x1="160" y1="70" x2="265" y2="115"/>
+    <line x1="55" y1="25" x2="265" y2="25"/>
+    <line x1="55" y1="115" x2="265" y2="115"/>
+   </g>
+   <g>
+    <circle cx="160" cy="70" r="10"/>
+    <circle cx="55" cy="25" r="6"/>
+    <circle cx="265" cy="25" r="6"/>
+    <circle cx="55" cy="115" r="6"/>
+    <circle cx="265" cy="115" r="6"/>
+   </g>
+  </svg>
+ </div>
+
+ <div class="panel">
+  <div>ЖУРНАЛ СОБЫТИЙ</div>
+  <div id="logs"></div>
+ </div>
+
+ <div id="voiceResult"></div>
+ <div id="disclaimer"></div>
 </section>
 
 <script>
-const view=document.getElementById('view');
-const shop=document.getElementById('shop');
-const hack=document.getElementById('hack');
-const logs=document.getElementById('logs');
-const result=document.getElementById('result');
-const stop=document.getElementById('stop');
-
-let timers=[];
-let active=false;
-let audio=null;
+const $=id=>document.getElementById(id);
+let timers=[],audio=null,active=false,voiceTimer=null;
 
 function later(fn,ms){
-  const id=setTimeout(()=>{if(active)fn()},ms);
-  timers.push(id);
+ const t=setTimeout(()=>{if(active)fn()},ms);
+ timers.push(t);
 }
-
-view.addEventListener('click',()=>{
+function log(text){
+ $('logs').textContent+=text+'\n';
+ $('logs').scrollTop=$('logs').scrollHeight;
+}
+function beep(freq,duration,delay=0){
+ if(!audio)return;
+ const start=audio.currentTime+delay;
+ const o=audio.createOscillator();
+ const g=audio.createGain();
+ o.type='sawtooth';o.frequency.value=freq;
+ g.gain.setValueAtTime(.001,start);
+ g.gain.linearRampToValueAtTime(.07,start+.025);
+ g.gain.exponentialRampToValueAtTime(.001,start+duration);
+ o.connect(g);g.connect(audio.destination);
+ o.start(start);o.stop(start+duration+.02);
+}
+function speak(){
+ if(!active)return;
+ if(!('speechSynthesis' in window)){
+  $('voiceResult').textContent='НУ ТЫ И ЛОХ, КОНЕЧНО 😂';
+  return;
+ }
+ const say=()=>{
+  if(!active)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance('Ну ты и лох, конечно!');
+  u.lang='ru-RU';u.rate=.92;u.pitch=.8;u.volume=1;
+  const voices=speechSynthesis.getVoices();
+  const ru=voices.find(v=>v.lang.toLowerCase().startsWith('ru'));
+  if(ru)u.voice=ru;
+  u.onend=()=>{if(active)$('disclaimer').textContent=
+    'Демонстрация завершена.'};
+  u.onerror=()=>{$('voiceResult').textContent=
+    'НУ ТЫ И ЛОХ, КОНЕЧНО 😂'};
+  speechSynthesis.speak(u);
+ };
+ $('voiceResult').textContent='АНАЛИЗ ЗАВЕРШЁН';
+ say();
+}
+$('view').addEventListener('click',()=>{
  if(active)return;
  active=true;
- shop.style.display='none';
- hack.style.display='block';
- document.body.style.background='#020503';
+ $('shop').style.display='none';
+ $('console').style.display='block';
+ document.body.style.background='#020605';
 
- const lines=[
-  '> Подключение к консоли...',
-  '> Инициализация системы...',
-  '> Проверка соединения... OK',
-  '> Поиск секретных файлов...',
-  '> Скачивание данных... 12%',
-  '> Скачивание данных... 48%',
-  '> Скачивание данных... 91%',
-  '> Анализ пользователя...',
-  '> Результат анализа готов.'
- ];
- lines.forEach((line,i)=>{
-   later(()=>{logs.textContent+=line+'\n'},i*650);
- });
+ try{
+  audio=new (window.AudioContext||window.webkitAudioContext)();
+  audio.resume().then(()=>{beep(880,.15);beep(440,.2,.18);beep(990,.15,.4)});
+ }catch(e){}
 
  if(navigator.vibrate)navigator.vibrate(7000);
 
- // Короткий электронный сигнал
- try{
-  audio=new (window.AudioContext||window.webkitAudioContext)();
-  audio.resume().then(()=>{
-   [740,440,880].forEach((f,i)=>{
-    const o=audio.createOscillator();
-    const g=audio.createGain();
-    o.frequency.value=f;
-    o.type='square';
-    g.gain.setValueAtTime(.08,audio.currentTime+i*.15);
-    g.gain.exponentialRampToValueAtTime(
-      .001,audio.currentTime+i*.15+.12);
-    o.connect(g);g.connect(audio.destination);
-    o.start(audio.currentTime+i*.15);
-    o.stop(audio.currentTime+i*.15+.13);
-   });
-  });
- }catch(e){}
+ const messages=[
+  'Инициализация сетевого интерфейса...',
+  'Поиск доступных узлов...',
+  'Проверка канала связи... OK',
+  'Подготовка тестового пакета...',
+  'Симуляция передачи данных...',
+  'Проверка состояния сервера...',
+  'Синхронизация визуальных модулей...',
+  'Анализ завершён...'
+ ];
+ messages.forEach((m,i)=>later(()=>log('> '+m),i*750));
 
- // Голос браузера, если доступен русский голос
+ let p=0;
+ const tick=setInterval(()=>{
+  if(!active){clearInterval(tick);return}
+  p=Math.min(100,p+2+Math.floor(Math.random()*5));
+  $('fill').style.width=p+'%';
+  $('percent').textContent=p+'%';
+  $('packets').textContent=String(
+    Number($('packets').textContent)+Math.floor(Math.random()*83)+12
+  ).padStart(4,'0');
+  $('nodes').textContent=String(4+Math.floor(Math.random()*5)).padStart(2,'0');
+  $('status').textContent=p<100?'SCAN':'READY';
+  const phases=[
+   'Подключение к тестовому серверу...',
+   'Анализ сетевых узлов...',
+   'Визуализация потока данных...',
+   'Завершение проверки...'
+  ];
+  $('phase').textContent=phases[Math.min(3,Math.floor(p/26))];
+  if(p>=100)clearInterval(tick);
+ },350);
+ timers.push(tick);
+
  later(()=>{
-  result.textContent='НУ ТЫ И ЛОХ, КОНЕЧНО 😂';
-  try{
-   if('speechSynthesis' in window){
-    speechSynthesis.cancel();
-    const msg=new SpeechSynthesisUtterance(
-      'Ну ты и лох, конечно!'
-    );
-    msg.lang='ru-RU';
-    msg.rate=1;
-    msg.pitch=.8;
-    speechSynthesis.speak(msg);
-   }
-  }catch(e){}
- },6500);
-});
-
-stop.addEventListener('click',()=>{
- active=false;
- timers.forEach(clearTimeout);
- timers=[];
- if(navigator.vibrate)navigator.vibrate(0);
- if('speechSynthesis' in window)speechSynthesis.cancel();
- if(audio){audio.close();audio=null}
- result.textContent='ЭФФЕКТ ОСТАНОВЛЕН';
- logs.textContent='';
- stop.textContent='ОСТАНОВЛЕНО';
+  $('phase').textContent='ПРОВЕРКА ЗАВЕРШЕНА';
+  log('> Сеанс визуализации завершён.');
+  speak();
+ },7000);
 });
 </script>
 </body>
